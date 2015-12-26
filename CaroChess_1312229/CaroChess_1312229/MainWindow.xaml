@@ -6,7 +6,7 @@
         <Label FontSize="30" FontWeight="Bold" Foreground="Silver" Name="lblCaption" Content="GOMOKU GAME" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="500,21,0,0"/>
         <Grid Margin="0,100,0,-31" HorizontalAlignment="Left" VerticalAlignment="Top" Width="600" Height="500">
             <Border Margin="50,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="485" Height="485" BorderBrush="Gray" BorderThickness="2">
-                <UniformGrid Background="Silver" Name="ChessBoard"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="480" Width="480"/>
+                <UniformGrid Background="Silver" Name="ChessBoard"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="480" Width="480" MouseDown="ChessBoard_MouseDown"/>
             </Border>
         </Grid>
 
