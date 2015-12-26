@@ -23,6 +23,19 @@ namespace CaroChess_1312229
         public MainWindow()
         {
             InitializeComponent();
+            CreateChessBoard();
+        }
+        private void CreateChessBoard()
+        {
+            SolidColorBrush defaultBrush = new SolidColorBrush(Colors.Gray);
+            SolidColorBrush alternateBrush = new SolidColorBrush(Colors.White);
+            for (int i = 0; i < 144; i++)
+            {
+                Rectangle cell = new Rectangle();
+                cell.Fill = defaultBrush;
+                cell.Stroke = alternateBrush;
+                ChessBoard.Children.Add(cell);
+            }
         }
     }
 }
