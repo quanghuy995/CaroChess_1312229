@@ -16,6 +16,23 @@ namespace CaroChess_1312229.Models
         private int _Row = 12;
         private int _Col = 12;
 
+        public static int maxDepth = 11;
+        public static int maxMove = 3;
+        public int depth = 0;
+
+        public Point[] PCMove = new Point[maxMove + 2];
+        Point[] HumanMove = new Point[maxMove + 2];
+        public Point[] WinMove = new Point[maxDepth + 2];
+        Point[] LoseMove = new Point[maxDepth + 2];
+
+        public int[] DScore = new int[5] { 0, 1, 9, 81, 729 };
+        public int[] AScore = new int[5] { 0, 2, 18, 162, 1458 };
+
+        public bool fWin = false;
+        public int fEnd = 1;
+
+        public EvalBoard eBoard = new EvalBoard();
+
         public Cells[,] Cell { get; set; }
         public enum Cells
         {
@@ -414,6 +431,246 @@ namespace CaroChess_1312229.Models
                 _color = Brushes.Black;
             }
             elip.Fill = _color;
+        }
+        #endregion
+
+        #region // AI()
+        public void AI()
+        {
+            for (int i = 0; i < maxMove; i++)
+            {
+                WinMove[i] = new Point();
+                PCMove[i] = new Point();
+                HumanMove[i] = new Point();
+            }
+
+            depth = 0;
+            FindMove();
+            //MessageBox.Show(depth.ToString());
+        }
+
+        private void FindMove()
+        {
+            if (depth > maxDepth) return;
+            depth++;
+            fWin = false;
+            bool fLose = false;
+            Point pcMove = new Point();
+            Point humanMove = new Point();
+            int countMove = 0;
+            EvalChessBoard(Cells.Player2, ref eBoard);
+
+            //Lay ra MaxMove buoc di co diem cao nhat
+            Point temp = new Point();
+            for (int i = 0; i < maxMove; i++)
+            {
+                temp = eBoard.MaxPos();
+                PCMove[i] = temp;
+                eBoard.EBoard[(int)temp.X, (int)temp.Y] = 0;
+            }
+
+            //Lay nuoc di trong PCMove[] ra danh thu
+            countMove = 0;
+            while (countMove < maxMove)
+            {
+
+                pcMove = PCMove[countMove++];
+                Cell[(int)pcMove.X, (int)pcMove.Y] = Cells.Player2;
+                WinMove.SetValue(pcMove, depth - 1);
+
+                //Tim cac nuoc di toi uu cua nguoi
+                eBoard.ResetBoard();
+                EvalChessBoard(Cells.Player1, ref eBoard);
+                //Lay ra maxMove nuoc di co diem cao nhat cua nguoi
+                for (int i = 0; i < maxMove; i++)
+                {
+                    temp = eBoard.MaxPos();
+                    HumanMove[i] = temp;
+                    eBoard.EBoard[(int)temp.X, (int)temp.Y] = 0;
+                }
+                //Danh thu cac nuoc di
+                for (int i = 0; i < maxMove; i++)
+                {
+                    humanMove = HumanMove[i];
+                    Cell[(int)humanMove.X, (int)humanMove.Y] = Cells.Player1;
+                    int kt = 0;
+                    kt = ktBeforePlayer(Cell);//kt nguoi choi di truoc
+                    if (kt == 2)
+                    {
+                        bool _ktWin = false;
+                        _ktWin = ktWin(Cell, (int)humanMove.X, (int)humanMove.Y);
+                        if (_ktWin == true)
+                        {
+                            fWin = true;
+                        }
+                    }
+
+                    if (kt == 2)
+                    {
+                        bool _ktWin = false;
+                        _ktWin = ktWin(Cell, (int)humanMove.X, (int)humanMove.Y);
+                        if (_ktWin == true)
+                        {
+                            fLose = true;
+                        }
+                    }
+                    if (fLose)
+                    {
+                        Cell[(int)pcMove.X, (int)pcMove.Y] = Cells.None;
+                        Cell[(int)humanMove.X, (int)humanMove.Y] = Cells.None;
+                        break;
+                    }
+                    if (fWin)
+                    {
+                        Cell[(int)pcMove.X, (int)pcMove.Y] = 0;
+                        Cell[(int)humanMove.X, (int)humanMove.Y] = 0;
+                        return;
+                    }
+                    FindMove();
+                    Cell[(int)humanMove.X, (int)humanMove.Y] = 0;
+                }
+                Cell[(int)pcMove.X, (int)pcMove.Y] = 0;
+
+            }
+        }
+
+        public void EvalChessBoard(Cells player, ref EvalBoard eBoard)
+        {
+            int rw, cl, ePC, eHuman;
+            eBoard.ResetBoard();
+
+            //Danh gia theo hang
+            for (rw = 0; rw < _Row; rw++)
+                for (cl = 0; cl < _Col - 4; cl++)
+                {
+                    ePC = 0; eHuman = 0;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (Cell[rw, cl + i] == Cells.Player1) eHuman++;
+                        if (Cell[rw, cl + i] == Cells.Player2) ePC++;
+                    }
+
+                    if (eHuman * ePC == 0 && eHuman != ePC)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (Cell[rw, cl + i] == Cells.None) // Neu o chua duoc danh
+                            {
+                                if (eHuman == 0)
+                                    if (player == Cells.Player1)
+                                        eBoard.EBoard[rw, cl + i] += DScore[ePC];
+                                    else eBoard.EBoard[rw, cl + i] += AScore[ePC];
+                                if (ePC == 0)
+                                    if (player == Cells.Player2)
+                                        eBoard.EBoard[rw, cl + i] += DScore[eHuman];
+                                    else eBoard.EBoard[rw, cl + i] += AScore[eHuman];
+                                if (eHuman == 4 || ePC == 4)
+                                    eBoard.EBoard[rw, cl + i] *= 2;
+                            }
+                        }
+
+                    }
+                }
+
+            //Danh gia theo cot
+            for (cl = 0; cl < _Col; cl++)
+                for (rw = 0; rw < _Row - 4; rw++)
+                {
+                    ePC = 0; eHuman = 0;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (Cell[rw + i, cl] == Cells.Player1) eHuman++;
+                        if (Cell[rw + i, cl] == Cells.Player2) ePC++;
+                    }
+
+                    if (eHuman * ePC == 0 && eHuman != ePC)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (Cell[rw + i, cl] == 0) // Neu o chua duoc danh
+                            {
+                                if (eHuman == 0)
+                                    if (player == Cells.Player1)
+                                        eBoard.EBoard[rw + i, cl] += DScore[ePC];
+                                    else eBoard.EBoard[rw + i, cl] += AScore[ePC];
+                                if (ePC == 0)
+                                    if (player == Cells.Player2)
+                                        eBoard.EBoard[rw + i, cl] += DScore[eHuman];
+                                    else eBoard.EBoard[rw + i, cl] += AScore[eHuman];
+                                if (eHuman == 4 || ePC == 4)
+                                    eBoard.EBoard[rw + i, cl] *= 2;
+                            }
+                        }
+
+                    }
+                }
+
+            //Danh gia duong cheo xuong
+            for (cl = 0; cl < _Col - 4; cl++)
+                for (rw = 0; rw < _Row - 4; rw++)
+                {
+                    ePC = 0; eHuman = 0;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (Cell[rw + i, cl + i] == Cells.Player1) eHuman++;
+                        if (Cell[rw + i, cl + i] == Cells.Player2) ePC++;
+                    }
+
+                    if (eHuman * ePC == 0 && eHuman != ePC)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (Cell[rw + i, cl + i] == 0) // Neu o chua duoc danh
+                            {
+                                if (eHuman == 0)
+                                    if (player == Cells.Player1)
+                                        eBoard.EBoard[rw + i, cl + i] += DScore[ePC];
+                                    else eBoard.EBoard[rw + i, cl + i] += AScore[ePC];
+                                if (ePC == 0)
+                                    if (player == Cells.Player2)
+                                        eBoard.EBoard[rw + i, cl + i] += DScore[eHuman];
+                                    else eBoard.EBoard[rw + i, cl + i] += AScore[eHuman];
+                                if (eHuman == 4 || ePC == 4)
+                                    eBoard.EBoard[rw + i, cl + i] *= 2;
+                            }
+                        }
+
+                    }
+                }
+
+            //Danh gia duong cheo len
+            for (rw = 4; rw < _Row; rw++)
+                for (cl = 0; cl < _Col - 4; cl++)
+                {
+                    ePC = 0; eHuman = 0;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (Cell[rw - i, cl + i] == Cells.Player1) eHuman++;
+                        if (Cell[rw - i, cl + i] == Cells.Player2) ePC++;
+                    }
+
+                    if (eHuman * ePC == 0 && eHuman != ePC)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (Cell[rw - i, cl + i] == 0) // Neu o chua duoc danh
+                            {
+                                if (eHuman == 0)
+                                    if (player == Cells.Player1)
+                                        eBoard.EBoard[rw - i, cl + i] += DScore[ePC];
+                                    else eBoard.EBoard[rw - i, cl + i] += AScore[ePC];
+                                if (ePC == 0)
+                                    if (player == Cells.Player2)
+                                        eBoard.EBoard[rw - i, cl + i] += DScore[eHuman];
+                                    else eBoard.EBoard[rw - i, cl + i] += AScore[eHuman];
+                                if (eHuman == 4 || ePC == 4)
+                                    eBoard.EBoard[rw - i, cl + i] *= 2;
+                            }
+                        }
+
+                    }
+                }
+
         }
         #endregion
     }
