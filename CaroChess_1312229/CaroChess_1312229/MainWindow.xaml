@@ -22,7 +22,7 @@
         <Button Content=" New Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,13,0,0"/>
         <Button Content=" Exit Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,47,0,0"/>
         <Button Content="Online" Name="btnOnline" HorizontalAlignment="Left" Margin="54,47,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="Offline" Name="btnOffline" HorizontalAlignment="Left" Margin="54,10,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Offline" Name="btnOffline" HorizontalAlignment="Left" Margin="54,10,0,0" VerticalAlignment="Top" Width="75" Click="btnOffline_Click"/>
         <RadioButton x:Name="radPlayervsPlayer" Content="Player vs Player" HorizontalAlignment="Left" Margin="164,47,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="radPlayervsComputer" Content="Player vs Computer" HorizontalAlignment="Left" Margin="164,13,0,0" VerticalAlignment="Top"/>
     </Grid>

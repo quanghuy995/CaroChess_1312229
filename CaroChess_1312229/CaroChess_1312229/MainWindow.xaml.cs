@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Newtonsoft.Json.Linq;
+using Quobject.SocketIoClientDotNet.Client;
 
 namespace CaroChess_1312229
 {
@@ -187,5 +189,12 @@ namespace CaroChess_1312229
             }
             #endregion
         }
+
+        private void btnOffline_Click(object sender, RoutedEventArgs e)
+        {
+            _flagonline = false;
+            btnOnline.IsEnabled = false;
+        }
+
     }
 }
