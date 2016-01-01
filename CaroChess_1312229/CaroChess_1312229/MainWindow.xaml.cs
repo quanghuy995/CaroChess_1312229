@@ -32,9 +32,6 @@ namespace CaroChess_1312229
             boardViewModel = new BoardViewModel();
         }
 
-        bool _flagonline = false;
-        int x = -1;
-        int y = -1;
         private void CreateChessBoard()
         {
             SolidColorBrush defaultBrush = new SolidColorBrush(Colors.Gray);
@@ -48,6 +45,14 @@ namespace CaroChess_1312229
             }
         }
 
+        bool _flagonline = false;
+        int x = -1;
+        int y = -1;
+        int tempX = -1;
+        int tempY = -1;
+        string PlayerAt = "1";
+
+        Socket socket;
         private void ChessBoard_MouseDown(object sender, MouseButtonEventArgs e)
         {
             #region //OFFLINE
@@ -79,7 +84,7 @@ namespace CaroChess_1312229
                                 //CreateChessBoard(Board);
                                 return;
                             }
-
+                            
                             int _ktHoa = 2;
                             _ktHoa = boardViewModel.CurrentBoard.ktHoa(boardViewModel.CurrentBoard.Cell);
                             if (_ktHoa == 1)
@@ -106,7 +111,7 @@ namespace CaroChess_1312229
                                 //CreateChessBoard(Board);
                                 return;
                             }
-
+                            
                             int _ktHoa = 2;
                             _ktHoa = boardViewModel.CurrentBoard.ktHoa(boardViewModel.CurrentBoard.Cell);
                             if (_ktHoa == 1)
@@ -188,6 +193,166 @@ namespace CaroChess_1312229
                 }
             }
             #endregion
+
+            #region //ONLINE
+            if (_flagonline == true)
+            {
+                if (radPlayervsPlayer.IsChecked == true)
+                {
+                    Point A = e.GetPosition(ChessBoard);
+                    x = (int)(A.Y / boardViewModel.CurrentBoard.cellWidth);//toa do x cua o
+                    y = (int)(A.X / boardViewModel.CurrentBoard.cellHeight);// toa do y cua o
+                    int currcell = boardViewModel.CurrentBoard.currentCell(x, y);//lay o hien tai
+                    if (boardViewModel.CurrentBoard.checkTrueBlock(boardViewModel.CurrentBoard.Cell, x, y) == true)
+                    {
+                        if (PlayerAt == "0")
+                        {
+                            socket.Emit("MyStepIs", JObject.FromObject(new { row = x, col = y }));
+                            boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.Player1;
+                            Ellipse elip = new Ellipse();
+                            //boardViewModel.CurrentBoard.UpdateBoard(x, y, currcell, boardViewModel.CurrentBoard.Cell, elip);
+                            //ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(x, y));
+                            //ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(x, y), elip);
+                        }
+                        if (PlayerAt == "1")
+                        {
+                            socket.Emit("MyStepIs", JObject.FromObject(new { row = x, col = y }));
+                            boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.Player1;
+                            Ellipse elip = new Ellipse();
+                            boardViewModel.CurrentBoard.UpdateBoard(x, y, currcell, boardViewModel.CurrentBoard.Cell, elip);
+                            ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(x, y));
+                            ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(x, y), elip);
+                            bool _ktWin = false;
+                            _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
+                            if (_ktWin == true)
+                            {
+                                MessageBox.Show("Violet Win !");
+                                //ChessBoard.Children.Clear();
+                                //CreateChessBoard(Board);
+                                return;
+                            }
+                        }
+
+                    }
+                    else
+                        MessageBox.Show("O khong hop le !!!");
+                }
+
+            }
+            #endregion
+        }
+
+
+        private void btnOnline_Click(object sender, RoutedEventArgs e)
+        {
+            ChessBoard.Children.Clear();
+            CreateChessBoard();
+            _flagonline = true;
+            btnOffline.IsEnabled = false;
+            socket = IO.Socket("ws://gomoku-lajosveres.rhcloud.com:8000");
+            string str2 = "You are the first player!";
+            string str1 = null;
+            socket.On("ChatMessage", (data) =>
+            {
+                var o = JObject.Parse(data.ToString());
+                string strUser = null;
+                if ((string)o["from"] != null)
+                {
+                    strUser = (string)o["from"];
+                }
+                else
+                {
+                    strUser = "Server";
+                }
+
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    DateTime date = DateTime.Now;
+                    txtChatBox.AppendText(strUser + ": " + ((Newtonsoft.Json.Linq.JObject)data)["message"].ToString() + "\n" + date.ToString() + "\n-----------------------------\n");
+
+                }));
+
+                if (((Newtonsoft.Json.Linq.JObject)data)["message"].ToString() == "Welcome!")
+                {
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        socket.Emit("MyNameIs", txtPlayer.Text);
+                        socket.Emit("ConnectToOtherPlayer");
+                    }));
+                }
+
+                if (((Newtonsoft.Json.Linq.JObject)data)["message"].ToString() == "This is not your turn!" || ((Newtonsoft.Json.Linq.JObject)data)["message"].ToString() == "Not allowed!")
+                {
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        Rectangle rect = new Rectangle();
+                        rect.Width = 40;
+                        rect.Height = 40;
+                        rect.Fill = Brushes.Gray;
+                        rect.Stroke = Brushes.White;
+                        boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.None;
+                        ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(x, y));
+                        ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(x, y), rect);
+                    }));
+                }
+
+            });
+
+            socket.On("EndGame", (data) =>
+            {
+                var o = JObject.Parse(data.ToString());
+                string strUser = null;
+                if ((string)o["from"] != null)
+                {
+                    strUser = (string)o["from"];
+                }
+                else
+                {
+                    strUser = "Server";
+                }
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    txtChatBox.AppendText(strUser + ": " + ((Newtonsoft.Json.Linq.JObject)data)["message"].ToString() + "\n");
+
+                }));
+            });
+
+            socket.On("NextStepIs", (data) =>
+            {
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    string tempRow = ((JObject)data)["row"].ToString();
+                    string tempCol = ((JObject)data)["col"].ToString();
+                    tempX = Int32.Parse(tempRow);
+                    tempY = Int32.Parse(tempCol);
+                    PlayerAt = ((JObject)data)["player"].ToString();
+
+                    #region //radPlayervsPlayer.IsChecked
+                    if (radPlayervsPlayer.IsChecked == true)
+                    {
+                        if (PlayerAt == "1")
+                        {
+                            int currcell = boardViewModel.CurrentBoard.currentCell(tempX, tempY);//lay o hien tai
+                            boardViewModel.CurrentBoard.Cell[tempX, tempY] = CaroChess_1312229.Models.Board.Cells.Player2;
+                            Ellipse elip = new Ellipse();
+                            boardViewModel.CurrentBoard.UpdateBoard(tempX, tempY, currcell, boardViewModel.CurrentBoard.Cell, elip);
+                            ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(tempX, tempY));
+                            ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(tempX, tempY), elip);
+                            bool _ktWin = false;
+                            _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, tempX, tempY);
+                            if (_ktWin == true)
+                            {
+                                MessageBox.Show("Black Win !");
+                                return;
+                            }
+                        }
+
+                    }
+                    #endregion
+
+                    //-----------------------------------------------
+                }));
+            });
         }
 
         private void btnOffline_Click(object sender, RoutedEventArgs e)
@@ -196,5 +361,23 @@ namespace CaroChess_1312229
             btnOnline.IsEnabled = false;
         }
 
+
+        private void ExitGame_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void NewGame_Click(object sender, RoutedEventArgs e)
+        {
+            ChessBoard.Children.Clear();
+            CreateChessBoard();
+            boardViewModel = new BoardViewModel();
+            _flagonline = false;
+            btnOnline.IsEnabled = true;
+            btnOffline.IsEnabled = true;
+            radPlayervsPlayer.IsChecked = false;
+            radPlayervsComputer.IsChecked = false;
+            txtChatBox.Clear();
+        }
     }
 }

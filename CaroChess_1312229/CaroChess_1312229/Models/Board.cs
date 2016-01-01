@@ -32,7 +32,6 @@ namespace CaroChess_1312229.Models
         public int fEnd = 1;
 
         public EvalBoard eBoard = new EvalBoard();
-
         public Cells[,] Cell { get; set; }
         public enum Cells
         {
@@ -43,14 +42,13 @@ namespace CaroChess_1312229.Models
 
         public Board()
         {
-            Cell = new Cells[12, 12];
-            for (int i = 0; i < 12; i++)
+             Cell = new Cells[12, 12];
+             for (int i = 0; i < 12; i++)
                 for (int j = 0; j < 12; j++)
                 {
                     Cell[i, j] = Cells.None;
                 }
         }
-
         public int cellWidth
         {
             set

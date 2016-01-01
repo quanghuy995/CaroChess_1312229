@@ -1,7 +1,7 @@
 ﻿<Window x:Class="CaroChess_1312229.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="CaroChess" Height="650" Width="1200">
+        Title="CaroChess" Height="650" Width="1200">
     <Grid Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Label FontSize="30" FontWeight="Bold" Foreground="Silver" Name="lblCaption" Content="GOMOKU GAME" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="500,21,0,0"/>
         <Grid Margin="0,100,0,-31" HorizontalAlignment="Left" VerticalAlignment="Top" Width="600" Height="500">
@@ -19,9 +19,9 @@
             <TextBox Name="txtSend" Text="Type your message here !" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="130,398,0,0" Width="324" Foreground="Silver" Height="30"/>
             <Button Name="btnSend" Content="Send" Background="Orange" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="469,398,0,0" Width="75" Height="30"/>
         </Grid>
-        <Button Content=" New Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,13,0,0"/>
-        <Button Content=" Exit Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,47,0,0"/>
-        <Button Content="Online" Name="btnOnline" HorizontalAlignment="Left" Margin="54,47,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content=" New Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,13,0,0" Click="NewGame_Click"/>
+        <Button Content=" Exit Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,47,0,0" Click="ExitGame_Click"/>
+        <Button Content="Online" Name="btnOnline" HorizontalAlignment="Left" Margin="54,47,0,0" VerticalAlignment="Top" Width="75" Click="btnOnline_Click"/>
         <Button Content="Offline" Name="btnOffline" HorizontalAlignment="Left" Margin="54,10,0,0" VerticalAlignment="Top" Width="75" Click="btnOffline_Click"/>
         <RadioButton x:Name="radPlayervsPlayer" Content="Player vs Player" HorizontalAlignment="Left" Margin="164,47,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="radPlayervsComputer" Content="Player vs Computer" HorizontalAlignment="Left" Margin="164,13,0,0" VerticalAlignment="Top"/>
