@@ -13,11 +13,11 @@
         <Grid Margin="620,100,0,-31" HorizontalAlignment="Left" VerticalAlignment="Top" Height="500" Width="572">
             <Label Name="lblYourName" Content="Your Name: " FontSize="16" FontStyle="Italic" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="43,25,0,0"/>
             <TextBox Text="Guest_AD" Name="txtPlayer" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="296" Margin="154,25,0,0"/>
-            <Button Name="btnGuest" Background="Orange" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Guest !" Margin="469,25,0,0" Width="75" Height="26"/>
+            <Button Name="btnGuest" Background="Orange" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Guest !" Margin="469,25,0,0" Width="75" Height="26" Click="btnGuest_Click"/>
             <TextBox Name="txtChatBox" IsReadOnly="True" VerticalScrollBarVisibility="Visible" Margin="43,70,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="293" Width="500"/>
             <Label Name="lblMessage" FontSize="16" FontStyle="Italic" FontWeight="Bold" Content="Message: " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="43,398,0,0" Height="35"/>
-            <TextBox Name="txtSend" Text="Type your message here !" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="130,398,0,0" Width="324" Foreground="Silver" Height="30"/>
-            <Button Name="btnSend" Content="Send" Background="Orange" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="469,398,0,0" Width="75" Height="30"/>
+            <TextBox Name="txtSend" Text="Type your message here !" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="130,398,0,0" Width="324" Foreground="Silver" Height="30" GotFocus="txtSend_GotFocus" LostFocus="txtSend_LostFocus"/>
+            <Button Name="btnSend" Content="Send" Background="Orange" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="469,398,0,0" Width="75" Height="30" Click="btnSend_Click"/>
         </Grid>
         <Button Content=" New Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,13,0,0" Click="NewGame_Click"/>
         <Button Content=" Exit Game" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="313,47,0,0" Click="ExitGame_Click"/>

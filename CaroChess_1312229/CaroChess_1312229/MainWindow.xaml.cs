@@ -30,6 +30,8 @@ namespace CaroChess_1312229
             InitializeComponent();
             CreateChessBoard();
             boardViewModel = new BoardViewModel();
+            txtSend.GotFocus += new RoutedEventHandler(this.txtSend_GotFocus);
+            txtSend.LostFocus += new RoutedEventHandler(this.txtSend_LostFocus);
         }
 
         private void CreateChessBoard()
@@ -469,5 +471,52 @@ namespace CaroChess_1312229
             radPlayervsComputer.IsChecked = false;
             txtChatBox.Clear();
         }
+
+        #region // Chat
+
+        private void btnGuest_Click(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                socket.Emit("MyNameIs", txtPlayer.Text);
+
+            }));
+        }
+
+        private void btnSend_Click(object sender, RoutedEventArgs e)
+        {
+            if (_flagonline == true)
+            {
+                socket.Emit("ChatMessage", txtSend.Text.ToString());
+                txtSend.Text = "";
+            }
+            if (_flagonline == false)
+            {
+                DateTime date = DateTime.Now;
+                txtChatBox.AppendText(txtPlayer.Text + ": " + txtSend.Text + "\n" + date.ToString() + "\n-----------------------------\n");
+                txtSend.Text = "";
+            }
+        }
+
+
+        private void txtSend_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (txtSend.Text == "Type your message here !")
+            {
+                txtSend.Text = "";
+                txtSend.Foreground = Brushes.Black;
+            }
+        }
+
+        private void txtSend_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (txtSend.Text == "")
+            {
+                txtSend.Text = "Type your message here !";
+                txtSend.Foreground = Brushes.LightGray;
+            }
+        }
+
+        #endregion
     }
 }
