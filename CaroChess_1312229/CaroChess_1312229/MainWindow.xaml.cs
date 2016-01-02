@@ -296,6 +296,36 @@ namespace CaroChess_1312229
                     }));
                 }
 
+                str1 = ((Newtonsoft.Json.Linq.JObject)data)["message"].ToString();
+                if (str1.Contains(str2))//dieu kien la nguoi choi dau tien (the first)
+                {
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        if (radPlayervsComputer.IsChecked == true)
+                        {
+                            Random r = new Random();
+                            int x = r.Next(2) + 5;
+                            int y = r.Next(2) + 6;
+                            socket.Emit("MyStepIs", JObject.FromObject(new { row = x, col = y }));
+                            boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.Player1;
+                            int currcell = boardViewModel.CurrentBoard.currentCell(x, y);//lay o hien tai
+                            Ellipse elip = new Ellipse();
+                            boardViewModel.CurrentBoard.UpdateBoard(x, y, currcell, boardViewModel.CurrentBoard.Cell, elip);
+                            ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(x, y));
+                            ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(x, y), elip);
+                            bool _ktWin = false;
+                            _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
+                            if (_ktWin == true)
+                            {
+                                MessageBox.Show("Violet Win !");
+                                //ChessBoard.Children.Clear();
+                                //CreateChessBoard();
+                                return;
+                            }
+                        }
+                    }));
+                }
+
             });
 
             socket.On("EndGame", (data) =>
@@ -351,6 +381,66 @@ namespace CaroChess_1312229
                     #endregion
 
                     //-----------------------------------------------
+
+                    #region //radPlayervsComputer.IsChecked
+                    if (radPlayervsComputer.IsChecked == true)
+                    {
+                        if (PlayerAt == "1")
+                        {
+                            int currcell = boardViewModel.CurrentBoard.currentCell(tempX, tempY);//lay o hien tai
+                            boardViewModel.CurrentBoard.Cell[tempX, tempY] = CaroChess_1312229.Models.Board.Cells.Player2;
+                            Ellipse elip = new Ellipse();
+                            boardViewModel.CurrentBoard.UpdateBoard(tempX, tempY, currcell, boardViewModel.CurrentBoard.Cell, elip);
+                            ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(tempX, tempY));
+                            ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(tempX, tempY), elip);
+                            bool _ktWin1 = false;
+                            _ktWin1 = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, tempX, tempY);
+                            if (_ktWin1 == true)
+                            {
+                                MessageBox.Show("Black Win !");
+                                return;
+                            }
+
+                            boardViewModel.CurrentBoard.AI();
+                            if (boardViewModel.CurrentBoard.fWin)
+                            {
+                                x = (int)boardViewModel.CurrentBoard.WinMove[0].X;
+                                y = (int)boardViewModel.CurrentBoard.WinMove[0].Y;
+                            }
+                            else
+                            {
+                                boardViewModel.CurrentBoard.EvalChessBoard(CaroChess_1312229.Models.Board.Cells.Player2, ref boardViewModel.CurrentBoard.eBoard);
+                                Point temp = new Point();
+                                temp = boardViewModel.CurrentBoard.eBoard.MaxPos();
+                                x = (int)temp.X;
+                                y = (int)temp.Y;
+                            }
+                            socket.Emit("MyStepIs", JObject.FromObject(new { row = x, col = y }));
+                            boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.Player1;
+                            currcell = boardViewModel.CurrentBoard.currentCell(x, y);
+                            Ellipse elip1 = new Ellipse();
+                            boardViewModel.CurrentBoard.UpdateBoard(x, y, currcell, boardViewModel.CurrentBoard.Cell, elip1);
+                            ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(x, y));
+                            ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(x, y), elip1);
+                            bool _ktWin = false;
+                            _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
+                            if (_ktWin == true)
+                            {
+                                MessageBox.Show("Violet Win !");
+                                return;
+                            }
+                        }
+                        if (PlayerAt == "0")
+                        {
+                            int currcell = boardViewModel.CurrentBoard.currentCell(tempX, tempY);//lay o hien tai
+                            boardViewModel.CurrentBoard.Cell[tempX, tempY] = CaroChess_1312229.Models.Board.Cells.Player1;
+                            Ellipse elip = new Ellipse();
+                            boardViewModel.CurrentBoard.UpdateBoard(tempX, tempY, currcell, boardViewModel.CurrentBoard.Cell, elip);
+                            ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(tempX, tempY));
+                            ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(tempX, tempY), elip);
+                        }
+                    }
+                    #endregion
                 }));
             });
         }
