@@ -81,7 +81,7 @@ namespace CaroChess_1312229
                             _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
                             if (_ktWin == true)
                             {
-                                MessageBox.Show("Violet Win !");
+                                MessageBox.Show("Blue Win !");
                                 //ChessBoard.Children.Clear();
                                 //CreateChessBoard(Board);
                                 return;
@@ -149,7 +149,7 @@ namespace CaroChess_1312229
                         _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
                         if (_ktWin == true)
                         {
-                            MessageBox.Show("Violet Win !");
+                            MessageBox.Show("Blue Win !");
                             //ChessBoard.Children.Clear();
                             //CreateChessBoard(Board);
                             return;
@@ -228,7 +228,7 @@ namespace CaroChess_1312229
                             _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
                             if (_ktWin == true)
                             {
-                                MessageBox.Show("Violet Win !");
+                                MessageBox.Show("Blue Win !");
                                 //ChessBoard.Children.Clear();
                                 //CreateChessBoard(Board);
                                 return;
@@ -319,7 +319,7 @@ namespace CaroChess_1312229
                             _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
                             if (_ktWin == true)
                             {
-                                MessageBox.Show("Violet Win !");
+                                MessageBox.Show("Blue Win !");
                                 //ChessBoard.Children.Clear();
                                 //CreateChessBoard();
                                 return;
@@ -428,7 +428,7 @@ namespace CaroChess_1312229
                             _ktWin = boardViewModel.CurrentBoard.ktWin(boardViewModel.CurrentBoard.Cell, x, y);
                             if (_ktWin == true)
                             {
-                                MessageBox.Show("Violet Win !");
+                                MessageBox.Show("Blue Win !");
                                 return;
                             }
                         }

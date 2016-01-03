@@ -422,7 +422,7 @@ namespace CaroChess_1312229.Models
             elip.Height = _cellHeight;
             if (Cell[x, y] == CaroChess_1312229.Models.Board.Cells.Player1)
             {
-                _color = Brushes.DarkViolet;
+                _color = Brushes.SteelBlue;
             }
             if (Cell[x, y] == CaroChess_1312229.Models.Board.Cells.Player2)
             {
