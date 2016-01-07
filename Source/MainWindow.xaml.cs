@@ -210,8 +210,8 @@ namespace CaroChess_1312229
                         if (PlayerAt == "0")
                         {
                             socket.Emit("MyStepIs", JObject.FromObject(new { row = x, col = y }));
-                            boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.Player1;
-                            Ellipse elip = new Ellipse();
+                            //boardViewModel.CurrentBoard.Cell[x, y] = CaroChess_1312229.Models.Board.Cells.Player1;
+                            //Ellipse elip = new Ellipse();
                             //boardViewModel.CurrentBoard.UpdateBoard(x, y, currcell, boardViewModel.CurrentBoard.Cell, elip);
                             //ChessBoard.Children.RemoveAt(boardViewModel.CurrentBoard.currentCell(x, y));
                             //ChessBoard.Children.Insert(boardViewModel.CurrentBoard.currentCell(x, y), elip);
@@ -229,8 +229,6 @@ namespace CaroChess_1312229
                             if (_ktWin == true)
                             {
                                 MessageBox.Show("Blue Win !");
-                                //ChessBoard.Children.Clear();
-                                //CreateChessBoard(Board);
                                 return;
                             }
                         }
@@ -320,8 +318,6 @@ namespace CaroChess_1312229
                             if (_ktWin == true)
                             {
                                 MessageBox.Show("Blue Win !");
-                                //ChessBoard.Children.Clear();
-                                //CreateChessBoard();
                                 return;
                             }
                         }
@@ -403,6 +399,7 @@ namespace CaroChess_1312229
                                 return;
                             }
 
+                            //-----
                             boardViewModel.CurrentBoard.AI();
                             if (boardViewModel.CurrentBoard.fWin)
                             {
@@ -456,6 +453,7 @@ namespace CaroChess_1312229
 
         private void ExitGame_Click(object sender, RoutedEventArgs e)
         {
+            socket.Off();
             this.Close();
         }
 
