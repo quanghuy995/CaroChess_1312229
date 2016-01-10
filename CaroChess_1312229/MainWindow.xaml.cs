@@ -453,7 +453,10 @@ namespace CaroChess_1312229
 
         private void ExitGame_Click(object sender, RoutedEventArgs e)
         {
-            socket.Off();
+            if (_flagonline == true)
+            {
+                socket.Off();
+            }
             this.Close();
         }
 
