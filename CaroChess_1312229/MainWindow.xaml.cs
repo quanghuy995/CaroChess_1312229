@@ -252,7 +252,7 @@ namespace CaroChess_1312229
             btnOffline.IsEnabled = false;
             //socket = IO.Socket("ws://gomoku-lajosveres.rhcloud.com:8000");
 
-            string strConnect = ConfigurationManager.ConnectionStrings["IpGomoku"].ConnectionString;
+            string strConnect = ConfigurationManager.ConnectionStrings["IpSeverGomoku"].ConnectionString;
             socket = IO.Socket(strConnect);
 
             string str2 = "You are the first player!";
