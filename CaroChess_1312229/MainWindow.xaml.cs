@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json.Linq;
 using Quobject.SocketIoClientDotNet.Client;
+using System.Configuration;
 
 namespace CaroChess_1312229
 {
@@ -249,7 +250,11 @@ namespace CaroChess_1312229
             CreateChessBoard();
             _flagonline = true;
             btnOffline.IsEnabled = false;
-            socket = IO.Socket("ws://gomoku-lajosveres.rhcloud.com:8000");
+            //socket = IO.Socket("ws://gomoku-lajosveres.rhcloud.com:8000");
+
+            string strConnect = ConfigurationManager.ConnectionStrings["IpGomoku"].ConnectionString;
+            socket = IO.Socket(strConnect);
+
             string str2 = "You are the first player!";
             string str1 = null;
             socket.On("ChatMessage", (data) =>
@@ -462,6 +467,10 @@ namespace CaroChess_1312229
 
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
+            if (_flagonline == true)
+            {
+                socket.Off();
+            }
             ChessBoard.Children.Clear();
             CreateChessBoard();
             boardViewModel = new BoardViewModel();
